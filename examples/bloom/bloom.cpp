@@ -23,7 +23,11 @@
 #include "VulkanModel.hpp"
 #include "VulkanBuffer.hpp"
 
+#ifndef NDEBUG
 #define ENABLE_VALIDATION true
+#else
+#define ENABLE_VALIDATION false
+#endif
 
 // Offscreen frame buffer properties
 #define FB_DIM 256

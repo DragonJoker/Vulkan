@@ -23,7 +23,11 @@
 #include "VulkanTexture.hpp"
 #include "VulkanModel.hpp"
 
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 
 #define SSAO_KERNEL_SIZE 32
 #define SSAO_RADIUS 0.5f

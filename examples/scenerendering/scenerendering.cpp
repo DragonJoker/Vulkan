@@ -45,7 +45,11 @@
 #include "VulkanBuffer.hpp"
 
 #define VERTEX_BUFFER_BIND_ID 0
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 
 // Vertex layout used in this example
 struct Vertex {

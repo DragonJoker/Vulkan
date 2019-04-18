@@ -35,7 +35,11 @@
 #include "VulkanBuffer.hpp"
 
 #define VERTEX_BUFFER_BIND_ID 0
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 #define OBJECT_INSTANCES 125
 
 // Vertex layout for this example

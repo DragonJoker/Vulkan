@@ -22,7 +22,11 @@
 #include "VulkanBuffer.hpp"
 #include "VulkanModel.hpp"
 
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 #define OBJ_DIM 0.05f
 
 class VulkanExample : public VulkanExampleBase

@@ -22,7 +22,11 @@
 #include "VulkanBuffer.hpp"
 #include "VulkanModel.hpp"
 
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 
 // 16 bits of depth is enough for such a small scene
 #define DEPTH_FORMAT VK_FORMAT_D16_UNORM

@@ -27,7 +27,11 @@
 #include "VulkanBuffer.hpp"
 
 #define VERTEX_BUFFER_BIND_ID 0
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 
 // Vertex layout for this example
 struct Vertex {
@@ -171,6 +175,7 @@ public:
 		{
 			std::string line;
 			std::stringstream lineStream;
+			lineStream.imbue( std::locale( "C" ) );
 			std::getline(istream, line);
 			lineStream << line;
 

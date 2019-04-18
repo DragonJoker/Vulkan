@@ -30,7 +30,11 @@
 #include "VulkanTexture.hpp"
 #include "VulkanModel.hpp"
 
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 #define GRID_DIM 7
 
 struct Material {

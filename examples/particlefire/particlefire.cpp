@@ -26,7 +26,11 @@
 #include "VulkanModel.hpp"
 
 #define VERTEX_BUFFER_BIND_ID 0
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 #define PARTICLE_COUNT 512
 #define PARTICLE_SIZE 10.0f
 

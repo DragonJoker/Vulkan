@@ -21,7 +21,11 @@
 #include "vulkanexamplebase.h"
 #include "VulkanModel.hpp"
 
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 
 class VulkanExample : public VulkanExampleBase
 {

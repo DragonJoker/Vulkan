@@ -30,7 +30,11 @@
 #include "../external/stb/stb_font_consolas_24_latin1.inl"
 
 #define VERTEX_BUFFER_BIND_ID 0
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 
 // Max. number of chars the text overlay buffer can hold
 #define TEXTOVERLAY_MAX_CHAR_COUNT 2048
@@ -752,6 +756,7 @@ public:
 		textOverlay->addText(title, 5.0f, 5.0f, TextOverlay::alignLeft);
 
 		std::stringstream ss;
+		ss.imbue(std::locale("C"));
 		ss << std::fixed << std::setprecision(2) << (frameTimer * 1000.0f) << "ms (" << lastFPS << " fps)";
 		textOverlay->addText(ss.str(), 5.0f, 25.0f, TextOverlay::alignLeft);
 
@@ -765,6 +770,7 @@ public:
 				for (int32_t z = -1; z <= 1; z += 2)
 				{
 					std::stringstream vpos;
+					vpos.imbue(std::locale("C"));
 					vpos << std::showpos << x << "/" << y << "/" << z;
 					glm::vec3 projected = glm::project(glm::vec3((float)x, (float)y, (float)z), uboVS.model, uboVS.projection, glm::vec4(0, 0, (float)width, (float)height));
 					textOverlay->addText(vpos.str(), projected.x, projected.y + (y > -1 ? 5.0f : -20.0f), TextOverlay::alignCenter);

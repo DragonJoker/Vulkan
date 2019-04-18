@@ -27,7 +27,11 @@
 #include "VulkanModel.hpp"
 
 #define VERTEX_BUFFER_BIND_ID 0
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 #define GRID_DIM 7
 #define OBJ_DIM 0.05f
 

@@ -22,7 +22,11 @@
 #include "VulkanTexture.hpp"
 
 #define VERTEX_BUFFER_BIND_ID 0
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 
 #if defined(__ANDROID__)
 #define TEX_DIM 1024

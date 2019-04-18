@@ -28,7 +28,11 @@
 #include "vulkanexamplebase.h"
 
 // Set to "true" to enable Vulkan's validation layers (see vulkandebug.cpp for details)
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 // Set to "true" to use staging buffers for uploading vertex and index data to device local memory
 // See "prepareVertices" for details on what's staging and on why to use it
 #define USE_STAGING true

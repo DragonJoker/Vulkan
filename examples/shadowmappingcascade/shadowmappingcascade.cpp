@@ -34,7 +34,11 @@
 #include "VulkanTexture.hpp"
 #include "VulkanModel.hpp"
 
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 
 #if defined(__ANDROID__)
 #define SHADOWMAP_DIM 2048

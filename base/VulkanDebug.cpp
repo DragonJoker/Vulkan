@@ -83,6 +83,7 @@ namespace vks
 
 			// Display message to default output (console/logcat)
 			std::stringstream debugMessage;
+			debugMessage.imbue( std::locale( "C" ) );
 			debugMessage << prefix << " [" << pLayerPrefix << "] Code " << msgCode << " : " << pMsg;
 
 #if defined(__ANDROID__)

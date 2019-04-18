@@ -23,7 +23,11 @@
 #include "VulkanModel.hpp"
 
 #define VERTEX_BUFFER_BIND_ID 0
+#ifndef NDEBUG
+#define ENABLE_VALIDATION true
+#else
 #define ENABLE_VALIDATION false
+#endif
 
 // Offscreen properties
 #define OFFSCREEN_DIM 256
