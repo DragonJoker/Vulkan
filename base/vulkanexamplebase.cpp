@@ -8,6 +8,8 @@
 
 #include "vulkanexamplebase.h"
 
+#include <ashes/ashes.h>
+
 std::vector<const char*> VulkanExampleBase::args;
 
 VkResult VulkanExampleBase::createInstance(bool enableValidation)
@@ -73,9 +75,11 @@ VkResult VulkanExampleBase::createInstance(bool enableValidation)
 
 std::string VulkanExampleBase::getWindowTitle()
 {
+	AshPluginDescription desc;
+	ashGetCurrentPluginDescription(&desc);
 	std::string device(deviceProperties.deviceName);
 	std::string windowTitle;
-	windowTitle = title + " - " + device;
+	windowTitle = title + " (" + std::string( desc.name ) + ") - " + device;
 	if (!settings.overlay) {
 		windowTitle += " - " + std::to_string(frameCounter) + " fps";
 	}
@@ -648,6 +652,13 @@ void VulkanExampleBase::submitFrame()
 
 VulkanExampleBase::VulkanExampleBase(bool enableValidation)
 {
+	// Load all Ashes plugins.
+	uint32_t count;
+	ashEnumeratePluginsDescriptions( &count, nullptr );
+	std::vector< AshPluginDescription > descs;
+	descs.resize( count );
+	ashEnumeratePluginsDescriptions( &count, descs.data() );
+
 #if !defined(VK_USE_PLATFORM_ANDROID_KHR)
 	// Check for a valid asset path
 	struct stat info;
@@ -728,6 +739,18 @@ VulkanExampleBase::VulkanExampleBase(bool enableValidation)
 		// Output frame times to benchmark result file
 		if ((args[i] == std::string("-bt")) || (args[i] == std::string("--benchframetimes"))) {
 			benchmark.outputFrameTimes = true;
+		}
+		// Check for rendering API selection
+		auto it = std::find_if(descs.begin()
+			, descs.end()
+			, [this, &i]( AshPluginDescription const & lookup)
+			{
+				return args[i] == "-" + std::string(lookup.name);
+			});
+
+		if (descs.end() != it)
+		{
+			ashSelectPlugin(*it);
 		}
 	}
 	
