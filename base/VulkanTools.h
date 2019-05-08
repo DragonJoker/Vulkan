@@ -61,6 +61,8 @@
 
 #if defined(__ANDROID__)
 #define ASSET_PATH ""
+#elif defined(VK_EXAMPLE_DATA_DIR)
+#define ASSET_PATH VK_EXAMPLE_DATA_DIR
 #else
 #define ASSET_PATH "./../data/"
 #endif
