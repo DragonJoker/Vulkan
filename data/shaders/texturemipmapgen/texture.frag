@@ -1,7 +1,6 @@
 #version 450
 
-layout (set = 0, binding = 1) uniform texture2D textureColor;
-layout (set = 0, binding = 2) uniform sampler samplers[3];
+layout (set = 0, binding = 1) uniform sampler2D textureColor[3];
 
 layout (location = 0) in vec2 inUV;
 layout (location = 1) in float inLodBias;
@@ -14,7 +13,20 @@ layout (location = 0) out vec4 outFragColor;
 
 void main() 
 {
-	vec4 color = texture(sampler2D(textureColor, samplers[inSamplerIndex]), inUV, inLodBias);
+	vec4 color;
+
+	if (inSamplerIndex == 0)
+	{
+		color = texture(textureColor[0], inUV, inLodBias);
+	}
+	else if (inSamplerIndex == 1)
+	{
+		color = texture(textureColor[1], inUV, inLodBias);
+	}
+	else
+	{
+		color = texture(textureColor[2], inUV, inLodBias);
+	}
 
 	vec3 N = normalize(inNormal);
 	vec3 L = normalize(inLightVec);

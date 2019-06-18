@@ -484,9 +484,8 @@ public:
 	{
 		std::vector<VkDescriptorPoolSize> poolSizes =
 		{
-			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1),	// Vertex shader UBO
-			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1),		// Sampled image
-			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_SAMPLER, 3),			// 3 samplers (array)
+			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1),			// Vertex shader UBO
+			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3),	// 3 Combined sampler/image (array)
 		};
 
 		VkDescriptorPoolCreateInfo descriptorPoolInfo = 
@@ -508,17 +507,11 @@ public:
 			VK_SHADER_STAGE_VERTEX_BIT,
 			0));
 
-		// Binding 1: Sampled image
+		// Binding 1: Combined sampler/image (3 descriptors)
 		setLayoutBindings.push_back(vks::initializers::descriptorSetLayoutBinding(
-			VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 			VK_SHADER_STAGE_FRAGMENT_BIT,
-			1));
-
-		// Binding 2: Sampler array (3 descriptors)
-		setLayoutBindings.push_back(vks::initializers::descriptorSetLayoutBinding(
-			VK_DESCRIPTOR_TYPE_SAMPLER,
-			VK_SHADER_STAGE_FRAGMENT_BIT,
-			2,
+			1,
 			3));
 
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = 
@@ -555,33 +548,21 @@ public:
 			0,
 			&uniformBufferVS.descriptor));
 
-		// Binding 1: Sampled image
-		VkDescriptorImageInfo textureDescriptor = 
-			vks::initializers::descriptorImageInfo(
-				VK_NULL_HANDLE,				 
-				texture.view, 
-				texture.imageLayout);
-		writeDescriptorSets.push_back(vks::initializers::writeDescriptorSet(
-			descriptorSet,
-			VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-			1,
-			&textureDescriptor));
-
-		// Binding 2: Sampler array
-		std::vector<VkDescriptorImageInfo> samplerDescriptors;
+		// Binding 1: Combined sampler/image array
+		std::vector<VkDescriptorImageInfo> textureDescriptors;
 		for (auto i = 0; i < samplers.size(); i++)
 		{
-			samplerDescriptors.push_back(vks::initializers::descriptorImageInfo(samplers[i], VK_NULL_HANDLE, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL));
+			textureDescriptors.push_back(vks::initializers::descriptorImageInfo(samplers[i], texture.view, texture.imageLayout));
 		}
-		VkWriteDescriptorSet samplerDescriptorWrite{};
-		samplerDescriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		samplerDescriptorWrite.dstSet = descriptorSet;
-		samplerDescriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-		samplerDescriptorWrite.descriptorCount = static_cast<uint32_t>(samplerDescriptors.size());
-		samplerDescriptorWrite.pImageInfo = samplerDescriptors.data();
-		samplerDescriptorWrite.dstBinding = 2;
-		samplerDescriptorWrite.dstArrayElement = 0;
-		writeDescriptorSets.push_back(samplerDescriptorWrite);
+		VkWriteDescriptorSet textureDescriptorWrite{};
+		textureDescriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		textureDescriptorWrite.dstSet = descriptorSet;
+		textureDescriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		textureDescriptorWrite.descriptorCount = static_cast<uint32_t>(textureDescriptors.size());
+		textureDescriptorWrite.pImageInfo = textureDescriptors.data();
+		textureDescriptorWrite.dstBinding = 1;
+		textureDescriptorWrite.dstArrayElement = 0;
+		writeDescriptorSets.push_back(textureDescriptorWrite);
 
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, NULL);
 	}

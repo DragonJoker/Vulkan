@@ -89,7 +89,7 @@ public:
 			float restDistD;
 			float sphereRadius = 0.5f;
 			glm::vec4 spherePos = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
-			glm::vec4 gravity = glm::vec4(0.0f, 9.8f, 0.0f, 0.0f);
+			glm::vec4 gravity = glm::vec4(0.0f, 4.0f * 9.8f, 0.0f, 0.0f);
 			glm::ivec2 particleCount;
 		} ubo;
 	} compute;
@@ -668,9 +668,9 @@ public:
 	void updateComputeUBO()
 	{
 		if (!paused) {
-			compute.ubo.deltaT = 0.000005f;
+			// compute.ubo.deltaT = 0.000005f;
 			// todo: base on frametime
-			//compute.ubo.deltaT = frameTimer * 0.0075f;
+			compute.ubo.deltaT = 0.0012f * frameTimer;
 
 			if (simulateWind) {
 				std::default_random_engine rndEngine(benchmark.active ? 0 : (unsigned)time(nullptr));
@@ -698,11 +698,11 @@ public:
 
 	void draw()
 	{
-	VkSubmitInfo computeSubmitInfo = vks::initializers::submitInfo();
-	computeSubmitInfo.commandBufferCount = 1;
-	computeSubmitInfo.pCommandBuffers = &compute.commandBuffers[readSet];
+		VkSubmitInfo computeSubmitInfo = vks::initializers::submitInfo();
+		computeSubmitInfo.commandBufferCount = 1;
+		computeSubmitInfo.pCommandBuffers = &compute.commandBuffers[readSet];
 
-	VK_CHECK_RESULT( vkQueueSubmit( compute.queue, 1, &computeSubmitInfo, compute.fence ) );
+		VK_CHECK_RESULT( vkQueueSubmit( compute.queue, 1, &computeSubmitInfo, compute.fence ) );
 
 		// Submit graphics commands
 		VulkanExampleBase::prepareFrame();
