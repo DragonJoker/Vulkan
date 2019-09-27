@@ -68,8 +68,8 @@ ELSEIF(USE_WAYLAND_WSI)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_USE_PLATFORM_WAYLAND_KHR")
 	include_directories(${WAYLAND_INCLUDE_DIR})
 	execute_process(COMMAND ${PKG_CONFIG} --variable=pkgdatadir wayland-protocols OUTPUT_VARIABLE protocol_dir OUTPUT_STRIP_TRAILING_WHITESPACE)
-	execute_process(COMMAND ${WAYLAND_SCANNER} client-header ${protocol_dir}/stable/xdg-shell/xdg-shell.xml xdg-shell-client-protocol.h
-			COMMAND ${WAYLAND_SCANNER} private-code ${protocol_dir}/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.c)
+	execute_process(COMMAND ${WAYLAND_SCANNER} client-header ${protocol_dir}/stable/xdg-shell/xdg-shell.xml ${CMAKE_BINARY_DIR}/xdg-shell-client-protocol.h
+			COMMAND ${WAYLAND_SCANNER} private-code ${protocol_dir}/stable/xdg-shell/xdg-shell.xml ${CMAKE_BINARY_DIR}/xdg-shell-protocol.c)
 	include_directories(${CMAKE_BINARY_DIR})
 ELSE(USE_D2D_WSI)
 	find_package(XCB REQUIRED)
@@ -98,36 +98,6 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 add_definitions(-std=c++11)
 
 file(GLOB SOURCE *.cpp )
-
-# Function for building single example
-function(buildExample EXAMPLE_NAME)
-	# Main
-	file(GLOB SOURCE *.cpp ${BASE_HEADERS} ${EXAMPLE_NAME}/*.cpp)
-	SET(MAIN_CPP ${EXAMPLE_NAME}/${EXAMPLE_NAME}.cpp)
-	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE_NAME}/main.cpp)
-		SET(MAIN_CPP ${EXAMPLE_NAME}/main.cpp)
-	ENDIF()
-	# imgui example requires additional source files
-	IF(${EXAMPLE_NAME} STREQUAL "imgui")
-		file(GLOB ADD_SOURCE external/imgui/*.cpp)
-		SET(SOURCE ${SOURCE} ${ADD_SOURCE})
-	ENDIF()
-	# Add shaders
-	set(SHADER_DIR data/shaders/${EXAMPLE_NAME})
-	file(GLOB SHADERS "${SHADER_DIR}/*.vert" "${SHADER_DIR}/*.frag" "${SHADER_DIR}/*.geom" "${SHADER_DIR}/*.tesc" "${SHADER_DIR}/*.tese")
-	source_group("Shaders" FILES ${SHADERS})
-	if(WIN32)
-		add_executable(${EXAMPLE_NAME} WIN32 ${MAIN_CPP} ${SOURCE} ${SHADERS})
-		target_link_libraries(${EXAMPLE_NAME} base ${Vulkan_LIBRARY} ${ASSIMP_LIBRARIES} ${WINLIBS})
-	else(WIN32)
-		add_executable(${EXAMPLE_NAME} ${MAIN_CPP} ${SOURCE} ${SHADERS})
-		target_link_libraries(${EXAMPLE_NAME} base )
-	endif(WIN32)
-
-	if(RESOURCE_INSTALL_DIR)
-		install(TARGETS ${EXAMPLE_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
-	endif()
-endfunction(buildExample)
 
 # Build all examples
 function(buildExamples)

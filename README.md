@@ -229,7 +229,7 @@ Attraction based 2D GPU particle system using compute shaders. Particle data is 
 
 N-body simulation based particle system with multiple attractors and particle-to-particle interaction using two passes separating particle movement calculation and final integration. Shared compute shader memory is used to speed up compute calculations.
 
-#### [04 - Ray tracing](examples/raytracing/)
+#### [04 - Ray tracing](examples/computeraytracing/)
 
 Simple GPU ray tracer with shadows and reflections using a compute shader. No scene geometry is rendered in the graphics pass.
 
@@ -338,6 +338,18 @@ Uses the VK_EXT_debug_marker extension to set debug markers, regions and to name
 #### [07 - Negative viewport height (VK_KHR_Maintenance1 or Vulkan 1.1)](examples/negativeviewportheight/)
 
 Shows how to render a scene using a negative viewport height, making the Vulkan render setup more similar to other APIs like OpenGL. Also has several options for changing relevant pipeline state, and displaying meshes with OpenGL or Vulkan style coordinates. Details can be found in [this tutorial](https://www.saschawillems.de/tutorials/vulkan/flipping-viewport).
+
+#### [08 - Basic ray tracing with VK_NV_ray_tracing](examples/nv_ray_tracing_basic)
+
+Basic example for doing ray tracing using the new Nvidia RTX extensions. Shows how to setup acceleration structures, ray tracing pipelines and the shaders needed to do the actual ray tracing.
+
+#### [09 - Ray traced shadows with VK_NV_ray_tracing](examples/nv_ray_tracing_shadows)
+
+Adds ray traced shadows casting using the new Nvidia RTX extensions to a more complex scene. Shows how to add multiple hit and miss shaders and how to modify existing shaders to add shadow calculations.
+
+#### [10 - Ray traced reflections with VK_NV_ray_tracing](examples/nv_ray_tracing_reflections)
+
+Renders a complex scene with reflective surfaces using using the new Nvidia RTX extensions. Shows how to do recursion inside of the ray tracing shaders for implementing real time reflections.
 
 ### <a name="Misc"></a> Misc
 
