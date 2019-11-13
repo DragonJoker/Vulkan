@@ -26,7 +26,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include <vulkan/vulkan.h>
+#include <ashes/ashes.h>
 #include "VulkanTools.h"
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
@@ -60,6 +60,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessageCallback(
 class VulkanExample
 {
 public:
+	static std::vector<const char *> args;
 	VkInstance instance;
 	VkPhysicalDevice physicalDevice;
 	VkDevice device;	
@@ -120,6 +121,30 @@ public:
 
 	VulkanExample()
 	{
+		// Load all Ashes plugins.
+		uint32_t count;
+		ashEnumeratePluginsDescriptions( &count, nullptr );
+		std::vector< AshPluginDescription > descs;
+		descs.resize( count );
+		ashEnumeratePluginsDescriptions( &count, descs.data() );
+
+		// Parse command line arguments
+		for ( size_t i = 0; i < args.size(); i++ )
+		{
+			// Check for rendering API selection
+			auto it = std::find_if( descs.begin()
+				, descs.end()
+				, [this, &i]( AshPluginDescription const & lookup )
+				{
+					return args[i] == "-" + std::string( lookup.name );
+				} );
+
+			if ( descs.end() != it )
+			{
+				ashSelectPlugin( *it );
+			}
+		}
+
 		LOG("Running headless compute example\n");
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
@@ -527,6 +552,8 @@ public:
 	}
 };
 
+std::vector<const char *> VulkanExample::args;
+
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 void handleAppCommand(android_app * app, int32_t cmd) {
 	if (cmd == APP_CMD_INIT_WINDOW) {
@@ -550,7 +577,11 @@ void android_main(android_app* state) {
 	}
 }
 #else
-int main() {
+int main(int argc, char ** argv) {
+	for ( int32_t i = 0; i < argc; i++ )
+	{
+		VulkanExample::args.push_back( argv[i] );
+	}
 	VulkanExample *vulkanExample = new VulkanExample();
 	std::cout << "Finished. Press enter to terminate...";
 	getchar();
