@@ -71,6 +71,8 @@ namespace vks
 			io.Fonts->AddFontFromMemoryTTF(fontAsset, size, 14.0f * scale);
 			delete[] fontAsset;
 		}
+#elif defined(VK_EXAMPLE_DATA_DIR)
+		io.Fonts->AddFontFromFileTTF( VK_EXAMPLE_DATA_DIR"/Roboto-Medium.ttf", 16.0f );
 #else
 		io.Fonts->AddFontFromFileTTF("./../data/Roboto-Medium.ttf", 16.0f);
 #endif		
