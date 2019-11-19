@@ -17,7 +17,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <vulkan/vulkan.h>
+#include <ashes/ashes.h>
 #include "vulkanexamplebase.h"
 #include "VulkanModel.hpp"
 
@@ -392,8 +392,13 @@ public:
 		const char* data;
 		vkMapMemory(device, dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&data);
 		data += subResourceLayout.offset;
+		std::string fullname = filename;
+		AshPluginDescription desc;
+		ashGetCurrentPluginDescription( &desc );
+		fullname = desc.name + fullname;
 
-		std::ofstream file(filename, std::ios::out | std::ios::binary);
+		std::ofstream file( fullname, std::ios::out | std::ios::binary);
+		file.imbue( std::locale{ "C" } );
 
 		// ppm header
 		file << "P6\n" << width << "\n" << height << "\n" << 255 << "\n";
