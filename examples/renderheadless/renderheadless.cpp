@@ -811,6 +811,7 @@ public:
 			AshPluginDescription desc;
 			ashGetCurrentPluginDescription( &desc );
 			std::ofstream file( desc.name + std::string{ filename }, std::ios::out | std::ios::binary );
+			file.imbue( std::locale{ "C" } );
 
 			// ppm header
 			file << "P6\n" << width << "\n" << height << "\n" << 255 << "\n";
