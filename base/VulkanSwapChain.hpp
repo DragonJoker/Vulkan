@@ -77,7 +77,9 @@ public:
 	uint32_t queueNodeIndex = UINT32_MAX;
 
 	/** @brief Creates the platform specific surface abstraction of the native platform window used for presentation */	
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(_DIRECT2DISPLAY)
+	void initSurface( uint32_t width, uint32_t height )
+#elif defined(VK_USE_PLATFORM_WIN32_KHR)
 	void initSurface(void* platformHandle, void* platformWindow)
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
 	void initSurface(ANativeWindow* window)
@@ -87,14 +89,14 @@ public:
 	void initSurface(xcb_connection_t* connection, xcb_window_t window)
 #elif (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK))
 	void initSurface(void* view)
-#elif defined(_DIRECT2DISPLAY)
-	void initSurface(uint32_t width, uint32_t height)
 #endif
 	{
 		VkResult err = VK_SUCCESS;
 
 		// Create the os-specific surface
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(_DIRECT2DISPLAY)
+		createDirect2DisplaySurface( width, height );
+#elif defined(VK_USE_PLATFORM_WIN32_KHR)
 		VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
 		surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 		surfaceCreateInfo.hinstance = (HINSTANCE)platformHandle;
@@ -119,8 +121,6 @@ public:
 		surfaceCreateInfo.flags = 0;
 		surfaceCreateInfo.pView = view;
 		err = vkCreateMacOSSurfaceMVK(instance, &surfaceCreateInfo, NULL, &surface);
-#elif defined(_DIRECT2DISPLAY)
-		createDirect2DisplaySurface(width, height);
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 		VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
 		surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
