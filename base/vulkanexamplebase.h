@@ -23,6 +23,7 @@
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #include <wayland-client.h>
 #include "xdg-shell-client-protocol.h"
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
 #elif defined(_DIRECT2DISPLAY)
 //
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
@@ -220,6 +221,8 @@ public:
 	std::string androidProduct;
 #elif (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK))
 	void* view;
+#if defined(SWS_CMAKE_MACOS)
+#endif
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 	wl_display *display = nullptr;
 	wl_registry *registry = nullptr;
@@ -263,6 +266,17 @@ public:
 	static void handleAppCommand(android_app* app, int32_t cmd);
 #elif (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK))
 	void* setupWindow(void* view);
+	void keyDown( uint32_t keyCode );
+	void keyUp( uint32_t keyCode );
+	void mouseLeftDown(int x, int y);
+	void mouseLeftUp(int x, int y);
+	void mouseRightDown(int x, int y);
+	void mouseRightUp(int x, int y);
+	void mouseMiddleDown(int x, int y);
+	void mouseMiddleUp(int x, int y);
+	void mouseScroll(int dx, int dy);
+	void mouseMove(int x, int y);
+	void windowResize(int x, int y);
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 	struct xdg_surface *setupWindow();
 	void initWaylandConnection();
@@ -496,5 +510,21 @@ int main(const int argc, const char *argv[])													    \
 	return 0;																						\
 }
 #elif (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK))
+#if defined(SWS_CMAKE_MACOS)
+#define VULKAN_EXAMPLE_MAIN()																		\
+VulkanExample *vulkanExample;																		\
+void macOSMain();																					\
+VulkanExampleBase * createVulkanExample()															\
+{																									\
+	return new VulkanExample();																		\
+}																									\
+int main(const int argc, const char *argv[])														\
+{																									\
+	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };					\
+	macOSMain();																					\
+	return 0;																						\
+}
+#else
 #define VULKAN_EXAMPLE_MAIN()
+#endif
 #endif

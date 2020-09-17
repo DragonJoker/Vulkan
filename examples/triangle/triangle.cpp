@@ -1165,6 +1165,23 @@ int main(const int argc, const char *argv[])
 	delete(vulkanExample);
 	return 0;
 }
+#elif defined(__APPLE__)
+#if defined(SWS_CMAKE_MACOS)
+VulkanExample *vulkanExample;
+void macOSMain();
+VulkanExampleBase * createVulkanExample()
+{
+	return new VulkanExample();
+}
+
+// MacOS entry point
+int main(const int argc, const char *argv[])
+{
+	for (size_t i = 0; i < argc; i++) { VulkanExample::args.push_back(argv[i]); };
+	macOSMain();
+	return 0;
+}
+#endif
 #elif defined(__linux__)
 
 // Linux entry point

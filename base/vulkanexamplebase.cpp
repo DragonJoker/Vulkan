@@ -10,6 +10,12 @@
 
 #include <ashes/ashes.h>
 
+#if defined(SWS_CMAKE_MACOS)
+void * createWindow();
+void macOSQuit();
+void macOSSetWindowTitle(void * view, const char * title);
+#endif
+
 std::vector<const char*> VulkanExampleBase::args;
 
 VkResult VulkanExampleBase::createInstance(bool enableValidation)
@@ -86,7 +92,7 @@ std::string VulkanExampleBase::getWindowTitle()
 	return windowTitle;
 }
 
-#if !(defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK))
+#if (defined(SWS_CMAKE_MACOS) || !(defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)))
 // iOS & macOS: VulkanExampleBase::getAssetPath() implemented externally to allow access to Objective-C components
 const std::string VulkanExampleBase::getAssetPath()
 {
@@ -262,6 +268,11 @@ void VulkanExampleBase::renderFrame()
 		if (!settings.overlay)	{
 			std::string windowTitle = getWindowTitle();
 			SetWindowText(window, windowTitle.c_str());
+		}
+#elif defined( __APPLE__ )
+		if (!settings.overlay)	{
+			std::string windowTitle = getWindowTitle();
+			macOSSetWindowTitle(view, windowTitle.c_str());
 		}
 #endif
 		frameCounter = 0;
@@ -652,6 +663,9 @@ void VulkanExampleBase::submitFrame()
 
 VulkanExampleBase::VulkanExampleBase(bool enableValidation)
 {
+#if __APPLE__
+	enableValidation = false;
+#endif
 	// Load all Ashes plugins.
 	uint32_t count;
 	ashEnumeratePluginsDescriptions( &count, nullptr );
@@ -1471,6 +1485,127 @@ void* VulkanExampleBase::setupWindow(void* view)
 {
 	this->view = view;
 	return view;
+}
+
+void VulkanExampleBase::keyDown(uint32_t keyCode)
+{
+	switch (keyCode)
+	{
+	case KEY_W:
+		if (camera.firstperson)
+		{
+			camera.keys.up = true;
+		}
+		break;
+	case KEY_S:
+		if (camera.firstperson)
+		{
+			camera.keys.down = true;
+		}
+		break;
+	case KEY_A:
+		if (camera.firstperson)
+		{
+			camera.keys.left = true;
+		}
+		break;
+	case KEY_D:
+		if (camera.firstperson)
+		{
+			camera.keys.right = true;
+		}
+		break;
+	case KEY_P:
+		paused = !paused;
+		break;
+	case KEY_F1:
+		if (settings.overlay) {
+			UIOverlay.visible = !UIOverlay.visible;
+		}
+		break;
+	case KEY_ESCAPE:
+		macOSQuit();
+		break;
+	}
+
+	keyPressed(keyCode);
+}
+
+void VulkanExampleBase::keyUp(uint32_t keyCode)
+{
+	if (camera.firstperson)
+	{
+		switch (keyCode)
+		{
+		case KEY_W:
+			camera.keys.up = false;
+			break;
+		case KEY_S:
+			camera.keys.down = false;
+			break;
+		case KEY_A:
+			camera.keys.left = false;
+			break;
+		case KEY_D:
+			camera.keys.right = false;
+			break;
+		}
+	}
+}
+
+void VulkanExampleBase::mouseLeftDown(int x, int y)
+{
+	mousePos = glm::vec2((float)x, (float)y);
+	mouseButtons.left = true;
+}
+
+void VulkanExampleBase::mouseLeftUp(int x, int y)
+{
+	mouseButtons.left = false;
+}
+
+void VulkanExampleBase::mouseRightDown(int x, int y)
+{
+	mousePos = glm::vec2((float)x, (float)y);
+	mouseButtons.right = true;
+}
+
+void VulkanExampleBase::mouseRightUp(int x, int y)
+{
+	mouseButtons.right = false;
+}
+
+void VulkanExampleBase::mouseMiddleDown(int x, int y)
+{
+	mousePos = glm::vec2((float)x, (float)y);
+	mouseButtons.middle = true;
+}
+
+void VulkanExampleBase::mouseMiddleUp(int x, int y)
+{
+	mouseButtons.middle = false;
+}
+
+void VulkanExampleBase::mouseScroll(int dx, int dy)
+{
+		zoom += (float)dy * 0.005f * zoomSpeed;
+		camera.translate(glm::vec3(0.0f, 0.0f, (float)dy * 0.005f * zoomSpeed));
+		viewUpdated = true;
+}
+
+void VulkanExampleBase::windowResize(int x, int y)
+{
+	if (prepared)
+	{
+		destWidth = x;
+		destHeight = y;
+		windowResize();
+	}
+}
+
+void VulkanExampleBase::mouseMove(int x, int y)
+{
+	handleMouseMove(x, y);
 }
 #elif defined(_DIRECT2DISPLAY)
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
