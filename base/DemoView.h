@@ -4,7 +4,5 @@
 
 @interface DemoView : NSView <NSWindowDelegate>
 {
-@public
-	bool running;
 }
 @end

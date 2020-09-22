@@ -221,8 +221,6 @@ public:
 	std::string androidProduct;
 #elif (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK))
 	void* view;
-#if defined(SWS_CMAKE_MACOS)
-#endif
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 	wl_display *display = nullptr;
 	wl_registry *registry = nullptr;
