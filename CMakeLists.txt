@@ -100,7 +100,6 @@ ENDIF(WIN32)
 IF (NOT Vulkan_FOUND)
 	message(FATAL_ERROR "Could not find Vulkan library!")
 ELSE()
-	message(STATUS ${Vulkan_LIBRARY})
 	include_directories(${Vulkan_INCLUDE_DIR})
 ENDIF()
 

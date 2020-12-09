@@ -81,11 +81,20 @@ VkResult VulkanExampleBase::createInstance(bool enableValidation)
 
 std::string VulkanExampleBase::getWindowTitle()
 {
-	AshPluginDescription desc;
-	ashGetCurrentPluginDescription(&desc);
 	std::string device(deviceProperties.deviceName);
 	std::string windowTitle;
-	windowTitle = title + " (" + std::string( desc.name ) + ") - " + device;
+
+	if ( ashIsUsingICD() )
+	{
+		AshPluginDescription desc;
+		ashGetCurrentPluginDescription( &desc );
+		windowTitle = title + " (" + std::string( desc.name ) + ") - " + device;
+	}
+	else
+	{
+		windowTitle = title + " - " + device;
+	}
+
 	if (!settings.overlay) {
 		windowTitle += " - " + std::to_string(frameCounter) + " fps";
 	}
@@ -666,10 +675,11 @@ VulkanExampleBase::VulkanExampleBase(bool enableValidation)
 #if __APPLE__
 	enableValidation = false;
 #endif
+
+	std::vector< AshPluginDescription > descs;
 	// Load all Ashes plugins.
 	uint32_t count;
 	ashEnumeratePluginsDescriptions( &count, nullptr );
-	std::vector< AshPluginDescription > descs;
 	descs.resize( count );
 	ashEnumeratePluginsDescriptions( &count, descs.data() );
 
@@ -754,17 +764,18 @@ VulkanExampleBase::VulkanExampleBase(bool enableValidation)
 		if ((args[i] == std::string("-bt")) || (args[i] == std::string("--benchframetimes"))) {
 			benchmark.outputFrameTimes = true;
 		}
-		// Check for rendering API selection
-		auto it = std::find_if(descs.begin()
-			, descs.end()
-			, [this, &i]( AshPluginDescription const & lookup)
-			{
-				return args[i] == "-" + std::string(lookup.name);
-			});
 
-		if (descs.end() != it)
+		// Check for rendering API selection
+		auto it = std::find_if( descs.begin()
+			, descs.end()
+			, [this, &i]( AshPluginDescription const & lookup )
+			{
+				return args[i] == "-" + std::string( lookup.name );
+			} );
+
+		if ( descs.end() != it )
 		{
-			ashSelectPlugin(*it);
+			ashSelectPlugin( *it );
 		}
 	}
 	
