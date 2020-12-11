@@ -154,6 +154,8 @@ public:
 		bool vsync = false;
 		/** @brief Enable UI overlay */
 		bool overlay = false;
+		/** @brief Ashes drop-in replacement mode */
+		bool ashesDropin = false;
 	} settings;
 
 	VkClearColorValue defaultClearColor = { { 0.025f, 0.025f, 0.025f, 1.0f } };

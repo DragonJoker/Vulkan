@@ -8,7 +8,11 @@
 
 #include "vulkanexamplebase.h"
 
+#if defined( AshesICD )
+#include <vulkan/vulkan.h>
+#else
 #include <ashes/ashes.h>
+#endif
 
 #if defined(SWS_CMAKE_MACOS)
 void * createWindow();
@@ -83,17 +87,13 @@ std::string VulkanExampleBase::getWindowTitle()
 {
 	std::string device(deviceProperties.deviceName);
 	std::string windowTitle;
-
-	if ( ashIsUsingICD() )
-	{
-		AshPluginDescription desc;
-		ashGetCurrentPluginDescription( &desc );
-		windowTitle = title + " (" + std::string( desc.name ) + ") - " + device;
-	}
-	else
-	{
-		windowTitle = title + " - " + device;
-	}
+#if defined( AshesICD )
+	windowTitle = title + " - " + device;
+#else
+	AshPluginDescription desc;
+	ashGetCurrentPluginDescription( &desc );
+	windowTitle = title + " (" + std::string( desc.name ) + ") - " + device;
+#endif
 
 	if (!settings.overlay) {
 		windowTitle += " - " + std::to_string(frameCounter) + " fps";
@@ -676,12 +676,9 @@ VulkanExampleBase::VulkanExampleBase(bool enableValidation)
 	enableValidation = false;
 #endif
 
+#if !defined( AshesICD )
 	std::vector< AshPluginDescription > descs;
-	// Load all Ashes plugins.
-	uint32_t count;
-	ashEnumeratePluginsDescriptions( &count, nullptr );
-	descs.resize( count );
-	ashEnumeratePluginsDescriptions( &count, descs.data() );
+#endif
 
 #if !defined(VK_USE_PLATFORM_ANDROID_KHR)
 	// Check for a valid asset path
@@ -765,6 +762,17 @@ VulkanExampleBase::VulkanExampleBase(bool enableValidation)
 			benchmark.outputFrameTimes = true;
 		}
 
+#if !defined( AshesICD )
+		// Ashes's drop-in replacement mode
+		if ((args[i] == std::string("-di")) || (args[i] == std::string("--ashesdropin"))) {
+			settings.ashesDropin = true;
+			// Load all Ashes plugins.
+			uint32_t count;
+			ashEnumeratePluginsDescriptions( &count, nullptr );
+			descs.resize( count );
+			ashEnumeratePluginsDescriptions( &count, descs.data() );
+		}
+
 		// Check for rendering API selection
 		auto it = std::find_if( descs.begin()
 			, descs.end()
@@ -777,6 +785,7 @@ VulkanExampleBase::VulkanExampleBase(bool enableValidation)
 		{
 			ashSelectPlugin( *it );
 		}
+#endif
 	}
 	
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)

@@ -17,7 +17,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#if defined( AshesICD )
+#include <vulkan/vulkan.h>
+#else
 #include <ashes/ashes.h>
+#endif
+
 #include "vulkanexamplebase.h"
 #include "VulkanModel.hpp"
 
@@ -393,9 +398,11 @@ public:
 		vkMapMemory(device, dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&data);
 		data += subResourceLayout.offset;
 		std::string fullname = filename;
+#if !defined( AshesICD )
 		AshPluginDescription desc;
 		ashGetCurrentPluginDescription( &desc );
 		fullname = desc.name + fullname;
+#endif
 
 		std::ofstream file( fullname, std::ios::out | std::ios::binary);
 		file.imbue( std::locale{ "C" } );

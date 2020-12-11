@@ -26,7 +26,12 @@
 #include <iostream>
 #include <algorithm>
 
+#if defined( AshesICD )
+#include <vulkan/vulkan.h>
+#else
 #include <ashes/ashes.h>
+#endif
+
 #include "VulkanTools.h"
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
@@ -121,6 +126,7 @@ public:
 
 	VulkanExample()
 	{
+#if !defined( AshesICD )
 		// Load all Ashes plugins.
 		uint32_t count;
 		ashEnumeratePluginsDescriptions( &count, nullptr );
@@ -144,6 +150,7 @@ public:
 				ashSelectPlugin( *it );
 			}
 		}
+#endif
 
 		LOG("Running headless compute example\n");
 
