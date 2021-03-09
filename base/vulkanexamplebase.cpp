@@ -677,7 +677,13 @@ VulkanExampleBase::VulkanExampleBase(bool enableValidation)
 #endif
 
 #if !defined( AshesICD )
+	settings.ashesDropin = true;
 	std::vector< AshPluginDescription > descs;
+	// Load all Ashes plugins.
+	uint32_t count;
+	ashEnumeratePluginsDescriptions( &count, nullptr );
+	descs.resize( count );
+	ashEnumeratePluginsDescriptions( &count, descs.data() );
 #endif
 
 #if !defined(VK_USE_PLATFORM_ANDROID_KHR)
@@ -763,16 +769,6 @@ VulkanExampleBase::VulkanExampleBase(bool enableValidation)
 		}
 
 #if !defined( AshesICD )
-		// Ashes's drop-in replacement mode
-		if ((args[i] == std::string("-di")) || (args[i] == std::string("--ashesdropin"))) {
-			settings.ashesDropin = true;
-			// Load all Ashes plugins.
-			uint32_t count;
-			ashEnumeratePluginsDescriptions( &count, nullptr );
-			descs.resize( count );
-			ashEnumeratePluginsDescriptions( &count, descs.data() );
-		}
-
 		// Check for rendering API selection
 		auto it = std::find_if( descs.begin()
 			, descs.end()
